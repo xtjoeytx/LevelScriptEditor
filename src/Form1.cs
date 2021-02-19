@@ -56,7 +56,6 @@ namespace LevelScriptEditor
 				activeNode.NPC.Code = npcScriptTextBox.Text.Replace("\r\n", "\n");
 				activeNode.NPC.Description = npcDescTextBox.Text.Trim();
 				activeNode.NPC.Image = npcImageTextBox.Text.Trim();
-				activeNode.UpdateDescription();
 			}
 		}
 
@@ -90,7 +89,11 @@ namespace LevelScriptEditor
 		{
 			var s = (TextBox)sender;
 			if (s.Modified)
+			{
 				updateActiveNode();
+				if (activeNode != null)
+					activeNode.UpdateDescription();
+			}
 		}
 
 		private void npcScriptTextBox_TextChanged(object sender, EventArgs e)
