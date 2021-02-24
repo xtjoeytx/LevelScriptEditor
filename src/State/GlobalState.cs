@@ -1,32 +1,33 @@
 ﻿using LevelScriptEditor.UI;
 using System.Collections.Generic;
+using LevelScriptEditor.Levels;
 
 namespace LevelScriptEditor.State
 {
 	public class GlobalState
 	{
-		public string baseDir = "";
+		public string BaseDir = "/home/marlon/Games/graal-stuff/clients/Graal-v2-Win";
 
-		public bool showCompletedNpcs = true;
-		public bool showEmptyLevels = false;
-		public bool showEmptyNpcs = false;
+		public bool ShowCompletedNpcs = true;
+		public bool ShowEmptyLevels = true;
+		public bool ShowEmptyNpcs = false;
 
-		public List<LevelNode> nodeList = new List<LevelNode>();
+		public readonly List<UINode> NodeList = new();
 		
-		public HashSet<LevelNode> levelChangeList = new HashSet<LevelNode>();
-		public HashSet<LevelNPCNode> npcChangeList = new HashSet<LevelNPCNode>();
+		public readonly HashSet<UINode> LevelChangeList = new();
+		public readonly HashSet<UINode> NpcChangeList = new();
 
-		public void UpdateNPC(LevelNPCNode npcNode, string code, string image, string desc)
+		public void UpdateNPC(UINode npcNode, string code, string image, string desc)
 		{
-			var npc = npcNode.NPC;
+			LevelNPC npc = (LevelNPC)npcNode.NodeObject;
 
 			// Nothing has changed here
-			var npcDesc = npc.Headers.GetValueOrDefault("DESC", string.Empty);
+			string npcDesc = npc.Headers.GetValueOrDefault("DESC", string.Empty);
 			if (npc.Code == code && npc.Image == image && npcDesc == desc)
 				return;
 			
 			// Copy changes over
-			var levelNode = (LevelNode)npcNode.Parent;
+			var levelNode = (UINode)npcNode.Parent;
 			npc.Code = code;
 			npc.Image = image;
 			npc.Headers["DESC"] = desc;
@@ -37,16 +38,16 @@ namespace LevelScriptEditor.State
 			if (npcDesc != desc)
 				npcNode.UpdateDescription();
 
-			npcChangeList.Add(npcNode);
-			levelChangeList.Add(levelNode);
+			NpcChangeList.Add(npcNode);
+			LevelChangeList.Add(levelNode);
 		}
 
 		public void SaveLevels()
 		{
-			foreach (var levelChange in levelChangeList)
+			foreach (UINode levelChange in LevelChangeList)
 				levelChange.Save();
-			levelChangeList.Clear();
-			npcChangeList.Clear();
+			LevelChangeList.Clear();
+			NpcChangeList.Clear();
 		}
 	}
 }

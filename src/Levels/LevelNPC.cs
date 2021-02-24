@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using LevelScriptEditor.UI;
 
 namespace LevelScriptEditor.Levels
 {
-	public class LevelNPC
+	public class LevelNPC : INodeObject
 	{
 		const string META_PREFIX = "//#[";
 		const char META_SEP = ':';

@@ -1,18 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace LevelScriptEditor.UI
 {
-	public class LevelNodeSorter : IComparer<LevelNode>
+	public class LevelNodeSorter : IComparer<UINode>
 	{
-		public LevelNodeSorter() { }
-
-		public int Compare(LevelNode tx, LevelNode ty)
+		public int Compare(UINode tx, UINode ty)
 		{
-			var check = (tx.Nodes.Count > 0 ? 0 : 1) - (ty.Nodes.Count > 0 ? 0 : 1);
-			if (check != 0)
-				return check;
-
-			return string.Compare(tx.Text, ty.Text);
+			int check = (tx.ChildCount > 0 ? 0 : 1) - (ty.ChildCount > 0 ? 0 : 1);
+			return check != 0 ? check : string.CompareOrdinal(tx.Text, ty.Text);
 		}
 	}
 }

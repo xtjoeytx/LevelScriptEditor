@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using LevelScriptEditor.UI;
 
 namespace LevelScriptEditor.Levels
 {
-	public class GameLevel
+	public class GameLevel : INodeObject
 	{
 		private static readonly string BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 		private readonly string filePath;

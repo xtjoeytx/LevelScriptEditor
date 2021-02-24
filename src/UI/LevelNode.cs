@@ -1,48 +1,53 @@
 ﻿using LevelScriptEditor.Levels;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
+using Gtk;
 
 namespace LevelScriptEditor.UI
 {
 	public partial class LevelNode : TreeNode
 	{
-		private string filePath = string.Empty;
-		private GameLevel level = null;
+		private string filePath;
 
-		public bool Loaded { get => level != null; }
+		public bool Loaded => GameLevel != null;
 
-		public GameLevel GameLevel { get => level; }
-			
+		public GameLevel GameLevel { get; private set; } = null;
+		[TreeNodeValue (Column=0)]
+		public string Text { get; set; }
+		
+		[TreeNodeValue (Column=1)]
+		public string FilePath => filePath;
+
 		public LevelNode(string baseDir, string name)
-			: base(name)
+			/*: base(name)*/
 		{
-			this.filePath = Path.Combine(baseDir, name);
+			Text = name;
+			filePath = Path.Combine(baseDir, name);
 		}
 
 
-		public List<LevelNPCNode> ChildrenNodes = new List<LevelNPCNode>();
+		//public List<LevelNPCNode> ChildrenNodes = new List<LevelNPCNode>();
 
 		public void Load()
 		{
-			Nodes.Clear();
-			ChildrenNodes.Clear();
+			//Nodes.Clear();
+			//ChildrenNodes.Clear();
 
-			level = GameLevel.Load(filePath);
-			if (level != null)
+			GameLevel = GameLevel.Load(filePath);
+			if (GameLevel == null) return;
+			
+			for (int i = 0; i < GameLevel.NpcList.Count; i++)
 			{
-				for (int i = 0; i < level.NpcList.Count; i++)
-				{
-					var npc = level.NpcList[i];
-					ChildrenNodes.Add(new LevelNPCNode(npc, i + 1));
-				}
+				LevelNPC npc = GameLevel.NpcList[i];
+				
+				/*ChildrenNodes.*/AddChild(new LevelNPCNode(npc, i + 1));
 			}
 		}
 
 		public void Save()
 		{
 			if (Loaded)
-				level.Save();
+				GameLevel.Save();
 		}
 	}
 }

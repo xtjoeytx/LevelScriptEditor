@@ -1,26 +1,31 @@
 ﻿using LevelScriptEditor.Levels;
-using System.Windows.Forms;
+using Gtk;
 
 namespace LevelScriptEditor.UI
 {
 	public class LevelNPCNode : TreeNode
 	{
-		private readonly LevelNPC npc = null;
-		private readonly int npcId = 0;
+		private readonly int _npcId = 0;
+		private string _text = null;
 
-		public LevelNPC NPC { get => npc; }
+		public LevelNPC NPC { get; } = null;
+		
+		[TreeNodeValue (Column=0)]
+		public string Text => _text;
 
-		public LevelNPCNode(LevelNPC levelNPC, int npcId)
-			: base()
+		[TreeNodeValue (Column=1)]
+		public string test = "";
+
+		public LevelNPCNode(LevelNPC levelNPC, int npcId) : base()
 		{
-			this.npc = levelNPC;
-			this.npcId = npcId;
+			NPC = levelNPC;
+			_npcId = npcId;
 			UpdateDescription();
 		}
 
 		public void UpdateDescription()
 		{
-			Text = (npc.Headers.ContainsKey("DESC") && npc.Headers["DESC"] != string.Empty) ? npc.Headers["DESC"] : "NPC " + npcId;
+			_text = NPC.Headers.ContainsKey("DESC") && NPC.Headers["DESC"] != string.Empty ? NPC.Headers["DESC"] : "NPC " + _npcId;
 		}
 	}
 }

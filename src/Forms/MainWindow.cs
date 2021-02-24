@@ -5,102 +5,142 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
+using Gdk;
+using Gtk;
+using LevelScriptEditor.Levels;
+using Window = Gtk.Window;
+using WindowType = Gtk.WindowType;
+using static Gtk.Application;
 
 namespace LevelScriptEditor.Forms
 {
-	public partial class MainWindow : Form
+	public partial class MainWindow : Window
 	{
 		private readonly GlobalState state = new GlobalState();
-		private LevelNPCNode activeNode = null;
+		private UINode activeNode = null;
+		private static MainWindow _instance;
+		public static MainWindow Instance => _instance ??= new MainWindow();
 
-		public MainWindow()
+		private MainWindow() : base(WindowType.Toplevel)
 		{
 			InitializeComponent();
-
+			/*
+			 TODO:
 			npcScriptTextBox.AcceptsReturn = true;
 			npcScriptTextBox.AcceptsTab = true;
 			npcScriptTextBox.ScrollBars = ScrollBars.Vertical;
+			*/
+			OpenToolStripMenuItem_Click(null, null);
 		}
 
-		private void TreeView1_AfterSelect(System.Object sender, System.Windows.Forms.TreeViewEventArgs e)
+		private void TreeView1_AfterSelect(object o, EventArgs args)
 		{
-			switch (e.Node.Level)
+			NodeSelection selection = (NodeSelection) o;
+			UINode node = (UINode)selection.SelectedNode;
+			
+			Console.WriteLine($@"Select: {node?.NodeObject?.GetType()}");
+			if (node != null)
 			{
-				// Level node
-				case 0:
-				{
-					var node = (LevelNode)e.Node;
-					if (!node.Loaded)
-					{
-						node.Load();
-						if (e.Action != TreeViewAction.ByKeyboard)
-							node.Expand();
-					}
-
-					break;
-				}
-
-				// NPC node
-				case 1:
-					SetActiveNode((LevelNPCNode)e.Node);
-					break;
-			}
-		}
-
-		private void TreeView1_MouseDown(object sender, MouseEventArgs e)
-		{
-			if (e.Button != MouseButtons.Right)
-				return;
-
-			TreeNode node_here = treeView1.GetNodeAt(e.X, e.Y);
-			treeView1.SelectedNode = node_here;
-
-			if (node_here != null)
-			{
-				switch (node_here.Level)
+				switch (node?.NodeObject?.GetType()?.ToString())
 				{
 					// Level node
-					case 0:
-						ShowContextMenu((LevelNode)node_here, e);
+					case "LevelScriptEditor.UI.LevelNode":
+					{
+						
+						if (!node.Loaded)
+						{
+							//node.Load();
+							/*
+							if (e.Action != TreeViewAction.ByKeyboard)
+								node.Expand();
+							*/
+							
+						}
+
 						break;
+					}
 
 					// NPC node
-					case 1:
-						ShowContextMenu((LevelNPCNode)node_here, e);
+					case "LevelScriptEditor.UI.LevelNPCNode":
+						SetActiveNode(node);
 						break;
 				}
 			}
 		}
 
-		private void ShowContextMenu(LevelNode node, MouseEventArgs e)
+		private void TreeView1_MouseDown(object sender, WidgetEventArgs e)
 		{
-			//var contextMenuStrip = new ContextMenuStrip();
+			if ((e.Event is EventButton ev) && (ev.Type == EventType.ButtonPress) && (ev.Window == treeView1.BinWindow))
+			{
+				
+				if (ev.Button != 3)
+					return;
+
+				treeView1.GetPathAtPos((int) ev.X, (int) ev.Y, out TreePath _path);
+
+				treeView1.NodeSelection.SelectPath(_path);
+
+				if (treeView1.NodeSelection.SelectedNode == null) return;
+				
+				UINode node = (UINode)treeView1.NodeSelection.SelectedNode;
+				ShowContextMenu(node, ev);
+			}
 		}
 
-		private void ShowContextMenu(LevelNPCNode node, MouseEventArgs e)
+		private void ShowContextMenu(UINode node, EventButton e)
 		{
-			var contextMenuStrip = new ContextMenuStrip();
+			Menu menu = new();
+			switch (node?.NodeObject?.GetType().ToString())
+			{
+
+				case "LevelScriptEditor.Levels.GameLevel":
+				{
+					//var contextMenuStrip = new ContextMenuStrip();
+					break;
+				}
+				case "LevelScriptEditor.Levels.LevelNPC":
+				{
+					
+					MenuItem menu_item = new("Add file");
+					menu.AttachToWidget(treeView1, null);
+					LevelNPCMenu(menu, node);
+					//menu.Add(menu_item);
+					menu.ShowAll();
+					//menu.Popup (null, null, null, e.Button, e.Time);
+					menu.PopupAtPointer(e);
+					//menu.Realize();
+					break;
+				}
+				default:
+					Console.WriteLine(node?.NodeObject?.GetType().ToString());
+					break;
+			}
+			
+		}
+
+		private void LevelNPCMenu(Menu menu, UINode node)
+		{
 
 			///////////
 			{
-				var marked = node.NPC.Headers.ContainsKey("MARKED");
+				bool marked = ((LevelNPC)node.NodeObject).Headers.ContainsKey("MARKED");
 
-				ToolStripMenuItem markLabel = new ToolStripMenuItem();
-				markLabel.Text = (marked ? "Unmark Complete" : "Mark Complete");
-				markLabel.Click += new EventHandler((s, e) =>
+				MenuItem markLabel = new();
+				markLabel.Label = (marked ? "Unmark Complete" : "Mark Complete");
+				markLabel.Activated += (s, e) =>
 				{
-					node.NPC.ToggleHeader("MARKED");
-					RedrawLevelNode((LevelNode)node.Parent);
-				});
-				contextMenuStrip.Items.Add(markLabel);
+					((LevelNPC)node.NodeObject).ToggleHeader("MARKED");
+					RedrawLevelNode((UINode)node.Parent);
+				};
+				menu.Add(markLabel);
 			}
 
 			{
-				ToolStripMenuItem replaceLabel = new ToolStripMenuItem();
-				replaceLabel.Text = "Replace similar scripts";
-				replaceLabel.Click += new EventHandler((s, e) =>
+				MenuItem replaceLabel = new ();
+				replaceLabel.Label = "Replace similar scripts";
+				replaceLabel.Activated += (s, e) =>
 				{
+					/*
 					using (var diag = new ReplaceScriptsForm(state, node))
 					{
 						var result = diag.ShowDialog();
@@ -112,33 +152,35 @@ namespace LevelScriptEditor.Forms
 							SetActiveNode(node);
 							RedrawNodes();
 						}
-					}
-				});
-				contextMenuStrip.Items.Add(replaceLabel);
+					}*/
+				};
+				menu.Add(replaceLabel);
 			}
-
-			contextMenuStrip.Show(treeView1, e.Location);
 		}
 
 		#region Update NPC Scripts
-		private void SetActiveNode(LevelNPCNode node)
+		private void SetActiveNode(UINode node)
 		{
 			// Save current node changes
 			if (activeNode != null)
 				UpdateActiveNode();
-			
+			/*
+			 TODO:
 			// Clear fields
 			npcDescTextBox.Clear();
 			npcImageTextBox.Clear();
 			npcScriptTextBox.Clear();
-
+			*/
 			// Set new node
 			activeNode = node;
 			if (node != null)
 			{
+				/*
+				 TODO:
 				npcDescTextBox.Text = node.NPC.Headers.GetValueOrDefault("DESC", string.Empty);
 				npcImageTextBox.Text = node.NPC.Image;
 				npcScriptTextBox.Text = node.NPC.Code.Replace("\n", "\r\n");
+				*/
 			}
 		}
 
@@ -146,82 +188,93 @@ namespace LevelScriptEditor.Forms
 		{
 			if (activeNode != null)
 			{
+				/*
+				 TODO:
 				state.UpdateNPC(activeNode,
 					npcScriptTextBox.Text.Replace("\r\n", "\n"),
 					npcImageTextBox.Text.Trim(),
 					npcDescTextBox.Text.Trim());
+				*/
 			}
 		}
 
 		private void SetStatusDescription(string text)
 		{
-			toolStripStatusLabel1.Text = text;
+			//TODO: toolStripStatusLabel1.Text = text;
 		}
 
 		private void NpcDescTextBox_TextChanged(object sender, EventArgs e)
 		{
+			/*
 			var s = (TextBox)sender;
 			if (s.Modified)
 				UpdateActiveNode();
+			*/
 		}
 
 		private void NpcScriptTextBox_TextChanged(object sender, EventArgs e)
 		{
+			/*
 			var s = (TextBox)sender;
 			if (s.Modified)
 				UpdateActiveNode();
+				*/
 		}
 
 		private void NpcImageTextBox_TextChanged(object sender, EventArgs e)
 		{
+			/*
 			var s = (TextBox)sender;
 			if (s.Modified)
 				UpdateActiveNode();
+				*/
 		}
 		#endregion
 
 		#region Toolbar Options
+		
 		private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			using (var fbd = new FolderBrowserDialog())
+			//using (var fbd = new FolderBrowserDialog())
 			{
-				DialogResult result = fbd.ShowDialog();
+				//DialogResult result = fbd.ShowDialog();
 
-				if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+				//if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
 				{
 					// TODO(joey): are you sure you want to discard changes?
 
 					// reset state
 					SetActiveNode(null);
-					state.nodeList.Clear();
-					state.levelChangeList.Clear();
-					state.npcChangeList.Clear();
-					treeView1.Nodes.Clear();
+					state.NodeList.Clear();
+					state.LevelChangeList.Clear();
+					state.NpcChangeList.Clear();
+					treeView1.NodeStore.Clear();
 
-					state.baseDir = fbd.SelectedPath;
-					string[] files = Directory.GetFiles(state.baseDir, "*.nw").Select(file => Path.GetFileName(file)).ToArray();
+					//state.BaseDir = fbd.SelectedPath;
+					string[] files = Directory.GetFiles(state.BaseDir, "*.nw").Select(file => System.IO.Path.GetFileName(file)).ToArray();
 
 					if (files.Length > 0)
 					{
 						// create nodes
 						foreach (string file in files)
-							state.nodeList.Add(new LevelNode(state.baseDir, file));
+							state.NodeList.Add(new UINode(state.BaseDir, file));
 
 						// read all levels
-						foreach (LevelNode node in state.nodeList)
-							node.Load();
+						//foreach (UINode node in state.NodeList)
+						//	node.Load();
 
 						// sort the nodes (may move into RedrawNodes)
-						state.nodeList.Sort(new LevelNodeSorter());
+						state.NodeList.Sort(new LevelNodeSorter());
 
 						RedrawNodes();
-						SetStatusDescription(string.Format("Loaded folder {0} with {1} levels", state.baseDir, files.Length));
+						SetStatusDescription(string.Format("Loaded folder {0} with {1} levels", state.BaseDir, files.Length));
 					}
-					else SetStatusDescription(string.Format("No levels found in {0}", state.baseDir));
+					else SetStatusDescription(string.Format("No levels found in {0}", state.BaseDir));
 				}
 			}
 		}
-
+/*
+		 TODO:
 		private void ReloadToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (activeNode != null)
@@ -253,8 +306,8 @@ namespace LevelScriptEditor.Forms
 				{
 					try
 					{
-						var levelsModified = state.levelChangeList.Count;
-						var npcsModified = state.npcChangeList.Count;
+						var levelsModified = state.LevelChangeList.Count;
+						var npcsModified = state.NpcChangeList.Count;
 
 						// Save level-change-list
 						state.SaveLevels();
@@ -281,75 +334,95 @@ namespace LevelScriptEditor.Forms
 		}
 		private void OptionsShowEmptyLevelsMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-			state.showEmptyLevels = optionsShowEmptyLevelsMenuItem.Checked;
+			state.ShowEmptyLevels = optionsShowEmptyLevelsMenuItem.Checked;
 			RedrawNodes();
 		}
 
 		private void OptionsShowCompletedMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-			state.showCompletedNpcs = optionsShowCompleteMenuItem.Checked;
+			state.ShowCompletedNpcs = optionsShowCompleteMenuItem.Checked;
 			RedrawNodes();
 		}
 
 		private void optionsShowEmptyNpcsMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
-			state.showEmptyNpcs = optionsShowEmptyNpcsMenuItem.Checked;
+			state.ShowEmptyNpcs = optionsShowEmptyNpcsMenuItem.Checked;
 			RedrawNodes();
 		}
+		*/
 		#endregion
+
+		NodeStore store;
+		NodeStore Store => store ??= new NodeStore(typeof(UINode));
 
 		private void RedrawNodes()
 		{
-			var nodes = state.nodeList.AsEnumerable();
+			IEnumerable<UINode> nodes = state.NodeList.AsEnumerable();
 
-			if (!state.showEmptyLevels)
-				nodes = nodes.Where(n => n.ChildrenNodes.Count > 0);
+			if (!state.ShowEmptyLevels)
+				nodes = nodes.Where(n => n.ChildCount > 0);
 
-			treeView1.Nodes.Clear();
-			treeView1.BeginUpdate();
+			//treeView1.Nodes.Clear();
+			//treeView1.BeginUpdate();
+			
 
-			foreach (var n in nodes)
+			foreach (UINode n in nodes)
 			{
 				RedrawLevelNode(n);
-				treeView1.Nodes.Add(n);
+				treeView1.NodeStore.AddNode(n);
 			}
 
-			treeView1.EndUpdate();
+			//treeView1.EndUpdate();
 
 			// Try to preserve the current position in the treeview
 			if (activeNode != null && activeNode.Parent != null)
 			{
+				/*
 				if (activeNode.Parent.LastNode != null)
 					activeNode.Parent.LastNode.EnsureVisible();
 				else
 					activeNode.Parent.EnsureVisible();
 				activeNode.EnsureVisible();
+				*/
 			}
 		}
 
-		private void RedrawLevelNode(LevelNode node)
+		private void RedrawLevelNode(UINode node)
 		{
+			/*
 			var childNodes = node.ChildrenNodes.AsEnumerable();
 
-			if (!state.showCompletedNpcs)
+			if (!state.ShowCompletedNpcs)
 				childNodes = childNodes.Where(n => !n.NPC.Headers.ContainsKey("MARKED"));
 
-			if (!state.showEmptyNpcs)
+			if (!state.ShowEmptyNpcs)
 				childNodes = childNodes.Where(n => n.NPC.Code.Trim().Length > 0);
 
 			node.Nodes.Clear();
 			node.Nodes.AddRange(childNodes.ToArray());
+			*/
 		}
 
-		private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
+		private void MainWindow_FormClosing(object sender, DeleteEventArgs e)
 		{
-			var modFileCount = state.levelChangeList.Count;
-
+			int modFileCount = state.LevelChangeList.Count;
+			bool cancel = false;
 			if (modFileCount > 0)
 			{
-				var window = MessageBox.Show("You still have " + modFileCount.ToString() + " levels with unsaved changes! Click No, and save your changes!", "Close the application without saving?", MessageBoxButtons.YesNo);
-				e.Cancel = (window == DialogResult.No);
+				//TODO: var window = MessageBox.Show("You still have " + modFileCount.ToString() + " levels with unsaved changes! Click No, and save your changes!", "Close the application without saving?", MessageBoxButtons.YesNo);
+				cancel = false; //TODO: (window == DialogResult.No);
 			}
+			
+			if (!cancel)
+			{
+				Quit();
+			}
+		}
+
+		private void TreeView1OnPopupMenu(object o, PopupMenuArgs args)
+		{
+			
+			throw new NotImplementedException();
 		}
 	}
 }
