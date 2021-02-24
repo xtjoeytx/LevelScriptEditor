@@ -13,7 +13,7 @@
 			this.Message = text;
 		}
 
-		public string getOutput()
+		public string GetOutput()
 		{
 			if (Message.EndsWith('\n'))
 				Message = Message.Substring(0, Message.Length - 1);

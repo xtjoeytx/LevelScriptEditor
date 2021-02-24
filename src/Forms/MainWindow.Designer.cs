@@ -1,6 +1,6 @@
-﻿namespace LevelScriptEditor
+﻿namespace LevelScriptEditor.Forms
 {
-	partial class Form1
+	partial class MainWindow
 	{
 		/// <summary>
 		///  Required designer variable.
@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -37,6 +37,10 @@
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsShowEmptyLevelsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsShowEmptyNpcsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsShowCompleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.treeView1 = new System.Windows.Forms.TreeView();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -53,10 +57,11 @@
 			// 
 			this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.optionsStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(1245, 28);
+			this.menuStrip1.Size = new System.Drawing.Size(1089, 28);
 			this.menuStrip1.TabIndex = 0;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -82,14 +87,14 @@
 			this.openToolStripMenuItem.Size = new System.Drawing.Size(246, 26);
 			this.openToolStripMenuItem.Tag = "";
 			this.openToolStripMenuItem.Text = "&Open Directory";
-			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+			this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
 			// 
 			// reloadToolStripMenuItem
 			// 
 			this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
 			this.reloadToolStripMenuItem.Size = new System.Drawing.Size(246, 26);
 			this.reloadToolStripMenuItem.Text = "Reload Level";
-			this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
+			this.reloadToolStripMenuItem.Click += new System.EventHandler(this.ReloadToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator
 			// 
@@ -104,7 +109,7 @@
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
 			this.saveToolStripMenuItem.Size = new System.Drawing.Size(246, 26);
 			this.saveToolStripMenuItem.Text = "&Save";
-			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+			this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
@@ -117,22 +122,59 @@
 			this.exitToolStripMenuItem.Size = new System.Drawing.Size(246, 26);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			// 
+			// optionsStripMenuItem
+			// 
+			this.optionsStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsShowEmptyLevelsMenuItem,
+            this.optionsShowEmptyNpcsMenuItem,
+            this.optionsShowCompleteMenuItem});
+			this.optionsStripMenuItem.Name = "optionsStripMenuItem";
+			this.optionsStripMenuItem.Size = new System.Drawing.Size(75, 24);
+			this.optionsStripMenuItem.Text = "&Options";
+			// 
+			// optionsShowEmptyLevelsMenuItem
+			// 
+			this.optionsShowEmptyLevelsMenuItem.CheckOnClick = true;
+			this.optionsShowEmptyLevelsMenuItem.Name = "optionsShowEmptyLevelsMenuItem";
+			this.optionsShowEmptyLevelsMenuItem.Size = new System.Drawing.Size(266, 26);
+			this.optionsShowEmptyLevelsMenuItem.Text = "Show Levels with no NPCs";
+			this.optionsShowEmptyLevelsMenuItem.CheckedChanged += new System.EventHandler(this.OptionsShowEmptyLevelsMenuItem_CheckedChanged);
+			// 
+			// optionsShowEmptyNpcsMenuItem
+			// 
+			this.optionsShowEmptyNpcsMenuItem.CheckOnClick = true;
+			this.optionsShowEmptyNpcsMenuItem.Name = "optionsShowEmptyNpcsMenuItem";
+			this.optionsShowEmptyNpcsMenuItem.Size = new System.Drawing.Size(266, 26);
+			this.optionsShowEmptyNpcsMenuItem.Text = "Show NPCs with no script";
+			this.optionsShowEmptyNpcsMenuItem.CheckedChanged += new System.EventHandler(this.optionsShowEmptyNpcsMenuItem_CheckedChanged);
+			// 
+			// optionsShowCompleteMenuItem
+			// 
+			this.optionsShowCompleteMenuItem.Checked = true;
+			this.optionsShowCompleteMenuItem.CheckOnClick = true;
+			this.optionsShowCompleteMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.optionsShowCompleteMenuItem.Name = "optionsShowCompleteMenuItem";
+			this.optionsShowCompleteMenuItem.Size = new System.Drawing.Size(266, 26);
+			this.optionsShowCompleteMenuItem.Text = "Show Completed NPCS";
+			this.optionsShowCompleteMenuItem.CheckedChanged += new System.EventHandler(this.OptionsShowCompletedMenuItem_CheckedChanged);
+			// 
 			// treeView1
 			// 
 			this.treeView1.Location = new System.Drawing.Point(12, 44);
 			this.treeView1.Name = "treeView1";
-			this.treeView1.Size = new System.Drawing.Size(270, 826);
+			this.treeView1.Size = new System.Drawing.Size(270, 733);
 			this.treeView1.TabIndex = 1;
 			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView1_AfterSelect);
+			this.treeView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TreeView1_MouseDown);
 			// 
 			// statusStrip1
 			// 
 			this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 873);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 780);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(1245, 22);
+			this.statusStrip1.Size = new System.Drawing.Size(1089, 22);
 			this.statusStrip1.TabIndex = 3;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
@@ -151,7 +193,7 @@
 			this.npcScriptTextBox.Name = "npcScriptTextBox";
 			this.npcScriptTextBox.Size = new System.Drawing.Size(788, 700);
 			this.npcScriptTextBox.TabIndex = 5;
-			this.npcScriptTextBox.TextChanged += new System.EventHandler(this.npcScriptTextBox_TextChanged);
+			this.npcScriptTextBox.TextChanged += new System.EventHandler(this.NpcScriptTextBox_TextChanged);
 			// 
 			// label1
 			// 
@@ -170,7 +212,7 @@
 			this.npcImageTextBox.Name = "npcImageTextBox";
 			this.npcImageTextBox.Size = new System.Drawing.Size(256, 27);
 			this.npcImageTextBox.TabIndex = 7;
-			this.npcImageTextBox.TextChanged += new System.EventHandler(this.npcImageTextBox_TextChanged);
+			this.npcImageTextBox.TextChanged += new System.EventHandler(this.NpcImageTextBox_TextChanged);
 			// 
 			// label2
 			// 
@@ -188,13 +230,13 @@
 			this.npcDescTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.npcDescTextBox.Location = new System.Drawing.Point(698, 44);
-			this.npcDescTextBox.MinimumSize = new System.Drawing.Size(128, 0);
+			this.npcDescTextBox.MinimumSize = new System.Drawing.Size(128, 4);
 			this.npcDescTextBox.Name = "npcDescTextBox";
 			this.npcDescTextBox.Size = new System.Drawing.Size(378, 27);
 			this.npcDescTextBox.TabIndex = 9;
-			this.npcDescTextBox.TextChanged += new System.EventHandler(this.npcDescTextBox_TextChanged);
+			this.npcDescTextBox.TextChanged += new System.EventHandler(this.NpcDescTextBox_TextChanged);
 			// 
-			// Form1
+			// MainWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -208,8 +250,9 @@
 			this.Controls.Add(this.treeView1);
 			this.Controls.Add(this.menuStrip1);
 			this.MinimumSize = new System.Drawing.Size(18, 256);
-			this.Name = "Form1";
+			this.Name = "MainWindow";
 			this.Text = "Quick Script Editor";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.statusStrip1.ResumeLayout(false);
@@ -237,6 +280,10 @@
 		private System.Windows.Forms.TextBox npcDescTextBox;
 		private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+		private System.Windows.Forms.ToolStripMenuItem optionsStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem optionsShowEmptyLevelsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem optionsShowCompleteMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem optionsShowEmptyNpcsMenuItem;
 	}
 }
 

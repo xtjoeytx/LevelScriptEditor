@@ -1,35 +1,49 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 
 namespace LevelScriptEditor.Levels
 {
 	public class LevelNPC
 	{
-		const string descriptionTag = "//#DESC:";
+		const string META_PREFIX = "//#[";
+		const char META_SEP = ':';
+		const char META_SUFFIX = ']';
 
+		public Dictionary<string, string> Headers = new Dictionary<string, string>();
 		public string Image;
 		public string Code;
-		public string Description = string.Empty;
 		public double X;
 		public double Y;
 
-		public LevelNPC(double x, double y, string image, string code)
+		public LevelNPC(double x, double y, string image, string script)
 		{
 			this.Image = image;
 			this.X = x;
 			this.Y = y;
-			SetCode(code);
+			SetCode(script);
 		}
 
-		public string getOutput()
+		public string GetOutput()
 		{
 			var sb = new StringBuilder();
 			sb.AppendFormat("NPC {0} {1} {2}\n", Image, X, Y);
-			if (Description != string.Empty)
-				sb.Append(descriptionTag).Append(" ").Append(Description).Append("\n");
+
+			foreach (var header in Headers)
+			{
+				if (!string.IsNullOrWhiteSpace(header.Value))
+				{
+					sb.Append(META_PREFIX).Append(header.Key);
+
+					if (header.Value != "true")
+						sb.Append(META_SEP).Append(header.Value);
+
+					sb.Append(META_SUFFIX).Append('\n');
+				}
+			}
 
 			sb.Append(Code.Replace("\r\n", "\n"));
 			if (!Code.EndsWith("\n"))
-				sb.Append("\n");
+				sb.Append('\n');
 
 			sb.Append("NPCEND");
 			return sb.ToString();
@@ -37,21 +51,55 @@ namespace LevelScriptEditor.Levels
 
 		private void SetCode(string code)
 		{
-			if (code.StartsWith(descriptionTag))
+			string[] lines = code.Split('\n');
+
+			code = string.Empty;
+
+			bool finishedHeader = false;
+			foreach (var line in lines)
 			{
-				int pos = code.IndexOf(descriptionTag);
-				if (pos >= 0)
+				if (!finishedHeader)
 				{
-					int end = code.IndexOf("\n", pos);
-					if (end >= 0)
+					if (line.StartsWith(META_PREFIX) && line.EndsWith(META_SUFFIX))
 					{
-						this.Description = code.Substring(pos + descriptionTag.Length, end - descriptionTag.Length).Trim();
-						code = code.Substring(end + 1);
+						string key, val;
+
+						var sep = line.IndexOf(META_SEP);
+						if (sep > 0)
+						{
+							key = line[META_PREFIX.Length..sep];
+							val = line[(sep + 1)..].TrimEnd(META_SUFFIX);
+						}
+						else
+						{
+							key = line[META_PREFIX.Length..].TrimEnd(META_SUFFIX);
+							val = "true";
+						}
+
+						Headers[key] = val;
+					}
+					else
+					{
+						finishedHeader = true;
+						code = line;
 					}
 				}
+				else code += '\n' + line;
 			}
 
 			this.Code = code;
+		}
+
+		public void ToggleHeader(string key)
+		{
+			if (Headers.ContainsKey(key))
+			{
+				Headers.Remove(key);
+			}
+			else
+			{
+				Headers.Add(key, "true");
+			}
 		}
 	}
 }

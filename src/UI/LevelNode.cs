@@ -1,4 +1,5 @@
 ﻿using LevelScriptEditor.Levels;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
@@ -19,9 +20,13 @@ namespace LevelScriptEditor.UI
 			this.filePath = Path.Combine(baseDir, name);
 		}
 
+
+		public List<LevelNPCNode> ChildrenNodes = new List<LevelNPCNode>();
+
 		public void Load()
 		{
 			Nodes.Clear();
+			ChildrenNodes.Clear();
 
 			level = GameLevel.Load(filePath);
 			if (level != null)
@@ -29,7 +34,7 @@ namespace LevelScriptEditor.UI
 				for (int i = 0; i < level.NpcList.Count; i++)
 				{
 					var npc = level.NpcList[i];
-					Nodes.Add(new LevelNPCNode(npc, i + 1));
+					ChildrenNodes.Add(new LevelNPCNode(npc, i + 1));
 				}
 			}
 		}

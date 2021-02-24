@@ -15,7 +15,7 @@
 			this.SignIndex = sign;
 		}
 
-		public string getOutput()
+		public string GetOutput()
 		{
 			return string.Format("CHEST {0} {1} {2} {3}", X, Y, ItemName, SignIndex);
 		}

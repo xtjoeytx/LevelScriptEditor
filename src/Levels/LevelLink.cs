@@ -21,7 +21,7 @@
 			this.WarpY = linkwarpy;
 		}
 
-		public string getOutput()
+		public string GetOutput()
 		{
 			return string.Format("LINK {0} {1} {2} {3} {4} {5} {6}", Level, X, Y, W, H, WarpX, WarpY);
 		}

@@ -202,19 +202,19 @@ namespace LevelScriptEditor.Levels
 
 			// write links
 			foreach (var link in LinkList)
-				sb.Append(link.getOutput()).Append('\n');
+				sb.Append(link.GetOutput()).Append('\n');
 
 			// write signs
 			foreach (var sign in SignList)
-				sb.Append(sign.getOutput()).Append('\n');
+				sb.Append(sign.GetOutput()).Append('\n');
 
 			// write chests
 			foreach (var chest in ChestList)
-				sb.Append(chest.getOutput()).Append('\n');
+				sb.Append(chest.GetOutput()).Append('\n');
 
 			// write npcs
 			foreach (var npc in NpcList)
-				sb.Append(npc.getOutput()).Append('\n');
+				sb.Append(npc.GetOutput()).Append('\n');
 
 			return sb.ToString();
 		}
