@@ -6,7 +6,7 @@ namespace LevelScriptEditor.State
 {
 	public class GlobalState
 	{
-		public string BaseDir = "/home/marlon/Games/graal-stuff/clients/Graal-v2-Win";
+		public string BaseDir = "";
 
 		public bool ShowCompletedNpcs = true;
 		public bool ShowEmptyLevels = true;
