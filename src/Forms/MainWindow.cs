@@ -389,5 +389,10 @@ namespace LevelScriptEditor.Forms
 				e.Cancel = (window == DialogResult.No);
 			}
 		}
+
+		private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Close();
+		}
 	}
 }
