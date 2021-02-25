@@ -1,4 +1,5 @@
-﻿using LevelScriptEditor.UI;
+﻿using LevelScriptEditor.Levels;
+using LevelScriptEditor.UI;
 using System.Collections.Generic;
 
 namespace LevelScriptEditor.State
@@ -10,41 +11,66 @@ namespace LevelScriptEditor.State
 		public bool showCompletedNpcs = true;
 		public bool showEmptyLevels = false;
 		public bool showEmptyNpcs = false;
+		public bool matchImageNames = true;
 
 		public List<LevelNode> nodeList = new List<LevelNode>();
 		
-		public HashSet<LevelNode> levelChangeList = new HashSet<LevelNode>();
+		public HashSet<GameLevel> levelChangeList = new HashSet<GameLevel>();
 		public HashSet<LevelNPCNode> npcChangeList = new HashSet<LevelNPCNode>();
 
-		public void UpdateNPC(LevelNPCNode npcNode, string code, string image, string desc)
+		public bool UpdateNPC(LevelNPCNode npcNode, string code, string image, string desc, bool? markComplete)
 		{
 			var npc = npcNode.NPC;
+			bool changed = false;
 
-			// Nothing has changed here
-			var npcDesc = npc.Headers.GetValueOrDefault("DESC", string.Empty);
-			if (npc.Code == code && npc.Image == image && npcDesc == desc)
-				return;
-			
-			// Copy changes over
-			var levelNode = (LevelNode)npcNode.Parent;
-			npc.Code = code;
-			npc.Image = image;
-			npc.Headers["DESC"] = desc;
+			if (code != null && npc.Code != code)
+			{
+				npc.Code = code;
+				changed = true;
+			}
 
-			// If we have a new description, update the tree node to reflect it
-			// NOTE: if you're doing mass-changes to many npcs, you should be using begin/endupdate on the treeview
-			// otherwise it will be rendering after every change.
-			if (npcDesc != desc)
-				npcNode.UpdateDescription();
+			if (image != null && npc.Image != image)
+			{
+				npc.Image = image;
+				changed = true;
+			}
 
-			npcChangeList.Add(npcNode);
-			levelChangeList.Add(levelNode);
+			if (desc != null)
+			{
+				if (npc.Headers.GetValueOrDefault("DESC", string.Empty) != desc)
+				{
+					npc.Headers["DESC"] = desc;
+					changed = true;
+				}
+			}
+
+			if (markComplete != null)
+			{
+				bool npcMarkComplete = (npc.Headers.GetValueOrDefault("MARKED", string.Empty) == "true");
+				if (markComplete != npcMarkComplete)
+				{
+					if (markComplete == true)
+						npcNode.NPC.Headers["MARKED"] = "true";
+					else
+						npcNode.NPC.Headers.Remove("MARKED");
+					changed = true;
+				}
+			}
+
+			if (changed)
+			{
+				npcChangeList.Add(npcNode);
+				levelChangeList.Add(npc.Level);
+			}
+
+			return changed;
 		}
 
 		public void SaveLevels()
 		{
 			foreach (var levelChange in levelChangeList)
 				levelChange.Save();
+
 			levelChangeList.Clear();
 			npcChangeList.Clear();
 		}

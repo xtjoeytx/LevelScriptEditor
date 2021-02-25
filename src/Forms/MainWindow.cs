@@ -17,10 +17,6 @@ namespace LevelScriptEditor.Forms
 		public MainWindow()
 		{
 			InitializeComponent();
-
-			npcScriptTextBox.AcceptsReturn = true;
-			npcScriptTextBox.AcceptsTab = true;
-			npcScriptTextBox.ScrollBars = ScrollBars.Vertical;
 		}
 
 		private void TreeView1_AfterSelect(System.Object sender, System.Windows.Forms.TreeViewEventArgs e)
@@ -31,7 +27,7 @@ namespace LevelScriptEditor.Forms
 				case 0:
 				{
 					var node = (LevelNode)e.Node;
-					if (!node.Loaded)
+					if (node.GameLevel == null)
 					{
 						node.Load();
 						if (e.Action != TreeViewAction.ByKeyboard)
@@ -108,8 +104,13 @@ namespace LevelScriptEditor.Forms
 						{
 							// clear the current node to prevent overwriting changes
 							activeNode = null;
-
 							SetActiveNode(node);
+							
+							treeView1.BeginUpdate();
+							foreach (var item in state.npcChangeList)
+								item.UpdateDescription();
+							treeView1.EndUpdate();
+
 							RedrawNodes();
 						}
 					}
@@ -149,7 +150,8 @@ namespace LevelScriptEditor.Forms
 				state.UpdateNPC(activeNode,
 					npcScriptTextBox.Text.Replace("\r\n", "\n"),
 					npcImageTextBox.Text.Trim(),
-					npcDescTextBox.Text.Trim());
+					npcDescTextBox.Text.Trim(),
+					null);
 			}
 		}
 
@@ -162,7 +164,11 @@ namespace LevelScriptEditor.Forms
 		{
 			var s = (TextBox)sender;
 			if (s.Modified)
+			{
 				UpdateActiveNode();
+				if (activeNode != null)
+					activeNode.UpdateDescription();
+			}
 		}
 
 		private void NpcScriptTextBox_TextChanged(object sender, EventArgs e)
@@ -246,36 +252,31 @@ namespace LevelScriptEditor.Forms
 
 		private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (activeNode != null)
+			var levelsModified = state.levelChangeList.Count;
+
+			if (levelsModified > 0)
 			{
-				var parentNode = (LevelNode)activeNode.Parent;
-				if (parentNode != null)
+				try
 				{
-					try
+					// Form the status messages before issueing SaveLevels since it will clear the list
+					string msg;
+					if (levelsModified > 1)
 					{
-						var levelsModified = state.levelChangeList.Count;
-						var npcsModified = state.npcChangeList.Count;
-
-						// Save level-change-list
-						state.SaveLevels();
-
-						// Status msg
-						string msg;
-						if (levelsModified > 1)
-						{
-							msg = string.Format("Saved changes for {0} npcs in {1} levels successfully.", npcsModified, levelsModified);
-						}
-						else
-						{
-							msg = string.Format("Saved level {0} successfully.", parentNode.GameLevel.Name);
-						}
-
-						SetStatusDescription(msg);
+						msg = string.Format("Saved changes for {0} npcs in {1} levels successfully.", state.npcChangeList.Count, levelsModified);
 					}
-					catch (Exception ex)
+					else
 					{
-						SetStatusDescription(string.Format("Error saving level {0}, exception received: {1}", parentNode.GameLevel.Name, ex.Message));
+						msg = string.Format("Saved level {0} successfully.", state.levelChangeList.First().Name);
 					}
+
+					// Save level-change-list
+					state.SaveLevels();
+
+					SetStatusDescription(msg);
+				}
+				catch (Exception ex)
+				{
+					SetStatusDescription(string.Format("Error saving level(s), exception received: {0}", ex.Message));
 				}
 			}
 		}
@@ -291,10 +292,41 @@ namespace LevelScriptEditor.Forms
 			RedrawNodes();
 		}
 
-		private void optionsShowEmptyNpcsMenuItem_CheckedChanged(object sender, EventArgs e)
+		private void OptionsShowEmptyNpcsMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			state.showEmptyNpcs = optionsShowEmptyNpcsMenuItem.Checked;
 			RedrawNodes();
+		}
+
+		private void OptionReplaceMatchImagesMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			state.matchImageNames = optionReplaceMatchImagesMenuItem.Checked;
+		}
+		#endregion
+
+		#region Script filtering
+		private Timer m_delayedTextChangedTimer;
+		private string m_searchText;
+
+		private void SearchBox_DelayTimer(object sender, EventArgs e)
+		{
+			((Timer)sender).Stop();
+			RedrawNodes();
+		}
+
+		private void SearchBox_TextChanged(object sender, EventArgs e)
+		{
+			var s = (TextBox)sender;
+			if (s.Modified)
+			{
+				if (m_delayedTextChangedTimer != null)
+					m_delayedTextChangedTimer.Stop();
+
+				m_delayedTextChangedTimer = new Timer();
+				m_delayedTextChangedTimer.Interval = 1000;
+				m_delayedTextChangedTimer.Tick += SearchBox_DelayTimer;
+				m_delayedTextChangedTimer.Start();
+			}
 		}
 		#endregion
 
@@ -305,13 +337,16 @@ namespace LevelScriptEditor.Forms
 			if (!state.showEmptyLevels)
 				nodes = nodes.Where(n => n.ChildrenNodes.Count > 0);
 
+			m_searchText = searchBox.Text.Replace("\r\n", "\n");
+
 			treeView1.Nodes.Clear();
 			treeView1.BeginUpdate();
 
 			foreach (var n in nodes)
 			{
 				RedrawLevelNode(n);
-				treeView1.Nodes.Add(n);
+				if (n.Nodes.Count > 0)
+					treeView1.Nodes.Add(n);
 			}
 
 			treeView1.EndUpdate();
@@ -336,6 +371,9 @@ namespace LevelScriptEditor.Forms
 
 			if (!state.showEmptyNpcs)
 				childNodes = childNodes.Where(n => n.NPC.Code.Trim().Length > 0);
+
+			if (m_searchText.Length > 0)
+				childNodes = childNodes.Where(n => n.NPC.Code.Contains(m_searchText));
 
 			node.Nodes.Clear();
 			node.Nodes.AddRange(childNodes.ToArray());
