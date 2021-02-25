@@ -12,6 +12,7 @@ namespace LevelScriptEditor.State
 		public bool showEmptyLevels = false;
 		public bool showEmptyNpcs = false;
 		public bool matchImageNames = true;
+		public bool inverseFilter = false;
 
 		public List<LevelNode> nodeList = new List<LevelNode>();
 		

@@ -53,6 +53,7 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.npcDescTextBox = new System.Windows.Forms.TextBox();
 			this.searchBox = new System.Windows.Forms.TextBox();
+			this.optionsInverseFilterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip1.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
 			this.SuspendLayout();
@@ -133,6 +134,7 @@
             this.optionsShowEmptyLevelsMenuItem,
             this.optionsShowEmptyNpcsMenuItem,
             this.optionsShowCompleteMenuItem,
+            this.optionsInverseFilterMenuItem,
             this.toolStripSeparator2,
             this.optionsReplaceStripMenuItem});
 			this.optionsStripMenuItem.Name = "optionsStripMenuItem";
@@ -283,6 +285,14 @@
 			this.searchBox.TabIndex = 10;
 			this.searchBox.TextChanged += new System.EventHandler(this.SearchBox_TextChanged);
 			// 
+			// optionsInverseFilterMenuItem
+			// 
+			this.optionsInverseFilterMenuItem.CheckOnClick = true;
+			this.optionsInverseFilterMenuItem.Name = "optionsInverseFilterMenuItem";
+			this.optionsInverseFilterMenuItem.Size = new System.Drawing.Size(263, 26);
+			this.optionsInverseFilterMenuItem.Text = "Inverse Search Filter";
+			this.optionsInverseFilterMenuItem.CheckedChanged += new System.EventHandler(this.optionsInverseFilterMenuItem_CheckedChanged);
+			// 
 			// MainWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -336,6 +346,7 @@
 		private System.Windows.Forms.ToolStripMenuItem optionsReplaceStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem optionReplaceMatchImagesMenuItem;
 		private System.Windows.Forms.TextBox searchBox;
+		private System.Windows.Forms.ToolStripMenuItem optionsInverseFilterMenuItem;
 	}
 }
 

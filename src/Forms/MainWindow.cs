@@ -12,7 +12,9 @@ namespace LevelScriptEditor.Forms
 	public partial class MainWindow : Form
 	{
 		private readonly GlobalState state = new GlobalState();
+		private LevelNode activeLevelNode = null;
 		private LevelNPCNode activeNode = null;
+
 
 		public MainWindow()
 		{
@@ -137,6 +139,7 @@ namespace LevelScriptEditor.Forms
 			activeNode = node;
 			if (node != null)
 			{
+				activeLevelNode = (LevelNode)activeNode.Parent;
 				npcDescTextBox.Text = node.NPC.Headers.GetValueOrDefault("DESC", string.Empty);
 				npcImageTextBox.Text = node.NPC.Image;
 				npcScriptTextBox.Text = node.NPC.Code.Replace("\n", "\r\n");
@@ -298,6 +301,12 @@ namespace LevelScriptEditor.Forms
 			RedrawNodes();
 		}
 
+		private void optionsInverseFilterMenuItem_CheckedChanged(object sender, EventArgs e)
+		{
+			state.inverseFilter = optionsInverseFilterMenuItem.Checked;
+			RedrawNodes();
+		}
+
 		private void OptionReplaceMatchImagesMenuItem_CheckedChanged(object sender, EventArgs e)
 		{
 			state.matchImageNames = optionReplaceMatchImagesMenuItem.Checked;
@@ -360,6 +369,12 @@ namespace LevelScriptEditor.Forms
 					activeNode.Parent.EnsureVisible();
 				activeNode.EnsureVisible();
 			}
+			else if (activeLevelNode != null)
+			{
+				// Kind of a fix for when the npc gets marked as completed and
+				// is no longer displaying in the treeview, we hop to the parent node
+				activeLevelNode.EnsureVisible();
+			}
 		}
 
 		private void RedrawLevelNode(LevelNode node)
@@ -373,7 +388,7 @@ namespace LevelScriptEditor.Forms
 				childNodes = childNodes.Where(n => n.NPC.Code.Trim().Length > 0);
 
 			if (m_searchText.Length > 0)
-				childNodes = childNodes.Where(n => n.NPC.Code.Contains(m_searchText));
+				childNodes = childNodes.Where(n => state.inverseFilter ^ n.NPC.Code.Contains(m_searchText, StringComparison.OrdinalIgnoreCase));
 
 			node.Nodes.Clear();
 			node.Nodes.AddRange(childNodes.ToArray());
