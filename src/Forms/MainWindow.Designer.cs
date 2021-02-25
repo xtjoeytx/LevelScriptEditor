@@ -33,28 +33,32 @@ namespace LevelScriptEditor.Forms
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
 			/*
-			this.menuStrip1 = new MenuStrip();
-			this.fileToolStripMenuItem = new ToolStripMenuItem();
-			this.openToolStripMenuItem = new ToolStripMenuItem();
-			this.reloadToolStripMenuItem = new ToolStripMenuItem();
-			this.toolStripSeparator = new ToolStripSeparator();
-			this.saveToolStripMenuItem = new ToolStripMenuItem();
-			this.toolStripSeparator1 = new ToolStripSeparator();
-			this.exitToolStripMenuItem = new ToolStripMenuItem();
-			this.optionsStripMenuItem = new ToolStripMenuItem();
-			this.optionsShowEmptyLevelsMenuItem = new ToolStripMenuItem();
-			this.optionsShowEmptyNpcsMenuItem = new ToolStripMenuItem();
-			this.optionsShowCompleteMenuItem = new ToolStripMenuItem();
+			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsShowEmptyLevelsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsShowEmptyNpcsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsShowCompleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.optionsReplaceStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionReplaceMatchImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			*/
 			this.treeView1 = new NodeView();
 			/*
-			this.statusStrip1 = new StatusStrip();
-			this.toolStripStatusLabel1 = new ToolStripStatusLabel();
-			this.npcScriptTextBox = new TextBox();
-			this.label1 = new Label();
-			this.npcImageTextBox = new TextBox();
-			this.label2 = new Label();
-			this.npcDescTextBox = new TextBox();
+			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+			this.npcScriptTextBox = new System.Windows.Forms.TextBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this.npcImageTextBox = new System.Windows.Forms.TextBox();
+			this.label2 = new System.Windows.Forms.Label();
+			this.npcDescTextBox = new System.Windows.Forms.TextBox();
+			this.searchBox = new System.Windows.Forms.TextBox();
 			this.menuStrip1.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
 			this.SuspendLayout();
@@ -127,13 +131,16 @@ namespace LevelScriptEditor.Forms
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.Size = new System.Drawing.Size(246, 26);
 			this.exitToolStripMenuItem.Text = "E&xit";
+			this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
 			// 
 			// optionsStripMenuItem
 			// 
 			this.optionsStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
             this.optionsShowEmptyLevelsMenuItem,
             this.optionsShowEmptyNpcsMenuItem,
-            this.optionsShowCompleteMenuItem});
+            this.optionsShowCompleteMenuItem,
+            this.toolStripSeparator2,
+            this.optionsReplaceStripMenuItem});
 			this.optionsStripMenuItem.Name = "optionsStripMenuItem";
 			this.optionsStripMenuItem.Size = new System.Drawing.Size(75, 24);
 			this.optionsStripMenuItem.Text = "&Options";
@@ -142,7 +149,7 @@ namespace LevelScriptEditor.Forms
 			// 
 			this.optionsShowEmptyLevelsMenuItem.CheckOnClick = true;
 			this.optionsShowEmptyLevelsMenuItem.Name = "optionsShowEmptyLevelsMenuItem";
-			this.optionsShowEmptyLevelsMenuItem.Size = new System.Drawing.Size(266, 26);
+			this.optionsShowEmptyLevelsMenuItem.Size = new System.Drawing.Size(263, 26);
 			this.optionsShowEmptyLevelsMenuItem.Text = "Show Levels with no NPCs";
 			this.optionsShowEmptyLevelsMenuItem.CheckedChanged += new System.EventHandler(this.OptionsShowEmptyLevelsMenuItem_CheckedChanged);
 			// 
@@ -150,9 +157,9 @@ namespace LevelScriptEditor.Forms
 			// 
 			this.optionsShowEmptyNpcsMenuItem.CheckOnClick = true;
 			this.optionsShowEmptyNpcsMenuItem.Name = "optionsShowEmptyNpcsMenuItem";
-			this.optionsShowEmptyNpcsMenuItem.Size = new System.Drawing.Size(266, 26);
+			this.optionsShowEmptyNpcsMenuItem.Size = new System.Drawing.Size(263, 26);
 			this.optionsShowEmptyNpcsMenuItem.Text = "Show NPCs with no script";
-			this.optionsShowEmptyNpcsMenuItem.CheckedChanged += new System.EventHandler(this.optionsShowEmptyNpcsMenuItem_CheckedChanged);
+			this.optionsShowEmptyNpcsMenuItem.CheckedChanged += new System.EventHandler(this.OptionsShowEmptyNpcsMenuItem_CheckedChanged);
 			// 
 			// optionsShowCompleteMenuItem
 			// 
@@ -160,16 +167,40 @@ namespace LevelScriptEditor.Forms
 			this.optionsShowCompleteMenuItem.CheckOnClick = true;
 			this.optionsShowCompleteMenuItem.CheckState = CheckState.Checked;
 			this.optionsShowCompleteMenuItem.Name = "optionsShowCompleteMenuItem";
-			this.optionsShowCompleteMenuItem.Size = new System.Drawing.Size(266, 26);
+			this.optionsShowCompleteMenuItem.Size = new System.Drawing.Size(263, 26);
 			this.optionsShowCompleteMenuItem.Text = "Show Completed NPCS";
 			this.optionsShowCompleteMenuItem.CheckedChanged += new System.EventHandler(this.OptionsShowCompletedMenuItem_CheckedChanged);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(260, 6);
+			// 
+			// optionsReplaceStripMenuItem
+			// 
+			this.optionsReplaceStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionReplaceMatchImagesMenuItem});
+			this.optionsReplaceStripMenuItem.Name = "optionsReplaceStripMenuItem";
+			this.optionsReplaceStripMenuItem.Size = new System.Drawing.Size(263, 26);
+			this.optionsReplaceStripMenuItem.Text = "Replace Scripts";
+			// 
+			// optionReplaceMatchImagesMenuItem
+			// 
+			this.optionReplaceMatchImagesMenuItem.Checked = true;
+			this.optionReplaceMatchImagesMenuItem.CheckOnClick = true;
+			this.optionReplaceMatchImagesMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.optionReplaceMatchImagesMenuItem.Name = "optionReplaceMatchImagesMenuItem";
+			this.optionReplaceMatchImagesMenuItem.Size = new System.Drawing.Size(229, 26);
+			this.optionReplaceMatchImagesMenuItem.Text = "Match Image Names";
+			this.optionReplaceMatchImagesMenuItem.CheckedChanged += new System.EventHandler(this.OptionReplaceMatchImagesMenuItem_CheckedChanged);
 			*/
 			// 
 			// treeView1
 			// 
-			//this.treeView1.Location = new System.Drawing.Point(12, 44);
+			//this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+//            | System.Windows.Forms.AnchorStyles.Left)));			this.treeView1.Location = new System.Drawing.Point(12, 44);
 			this.treeView1.Name = "treeView1";
-			this.treeView1.SetSizeRequest(270,733);//.Size = new System.Drawing.Size(270, 733);
+			this.treeView1.SetSizeRequest(270, 632);
 			//this.treeView1.TabIndex = 1;
 			//this.treeView1.AfterSelect += new TreeViewEventHandler(this.TreeView1_AfterSelect);
 			this.treeView1.NodeSelection.Changed += this.TreeView1_AfterSelect;
@@ -244,7 +275,7 @@ namespace LevelScriptEditor.Forms
 			this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.statusStrip1.Items.AddRange(new ToolStripItem[] {
             this.toolStripStatusLabel1});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 780);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 779);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(1089, 22);
 			this.statusStrip1.TabIndex = 3;
@@ -257,13 +288,16 @@ namespace LevelScriptEditor.Forms
 			// 
 			// npcScriptTextBox
 			// 
-			this.npcScriptTextBox.Anchor = ((AnchorStyles)((((AnchorStyles.Top | AnchorStyles.Bottom) 
-            | AnchorStyles.Left) 
-            | AnchorStyles.Right)));
+			this.npcScriptTextBox.AcceptsReturn = true;
+			this.npcScriptTextBox.AcceptsTab = true;
+			this.npcScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.npcScriptTextBox.Location = new System.Drawing.Point(288, 77);
 			this.npcScriptTextBox.Multiline = true;
 			this.npcScriptTextBox.Name = "npcScriptTextBox";
-			this.npcScriptTextBox.Size = new System.Drawing.Size(788, 700);
+			this.npcScriptTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.npcScriptTextBox.Size = new System.Drawing.Size(788, 699);
 			this.npcScriptTextBox.TabIndex = 5;
 			this.npcScriptTextBox.TextChanged += new System.EventHandler(this.NpcScriptTextBox_TextChanged);
 			// 
@@ -308,11 +342,24 @@ namespace LevelScriptEditor.Forms
 			this.npcDescTextBox.TabIndex = 9;
 			this.npcDescTextBox.TextChanged += new System.EventHandler(this.NpcDescTextBox_TextChanged);
 			// 
+			// searchBox
+			// 
+			this.searchBox.AcceptsReturn = true;
+			this.searchBox.AcceptsTab = true;
+			this.searchBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.searchBox.Location = new System.Drawing.Point(13, 682);
+			this.searchBox.Multiline = true;
+			this.searchBox.Name = "searchBox";
+			this.searchBox.Size = new System.Drawing.Size(269, 94);
+			this.searchBox.TabIndex = 10;
+			this.searchBox.TextChanged += new System.EventHandler(this.SearchBox_TextChanged);
+			// 
 			// MainWindow
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-			this.AutoScaleMode = AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1089, 802);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.ClientSize = new System.Drawing.Size(1089, 801);
+			this.Controls.Add(this.searchBox);
 			this.Controls.Add(this.npcDescTextBox);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.npcImageTextBox);
@@ -348,28 +395,32 @@ namespace LevelScriptEditor.Forms
 
 		#endregion
 		/*
-		private MenuStrip menuStrip1;
-		private ToolStripMenuItem fileToolStripMenuItem;
-		private ToolStripMenuItem openToolStripMenuItem;
-		private ToolStripSeparator toolStripSeparator;
-		private ToolStripMenuItem saveToolStripMenuItem;
-		private ToolStripSeparator toolStripSeparator1;
-		private ToolStripMenuItem exitToolStripMenuItem;
+		private System.Windows.Forms.MenuStrip menuStrip1;
+		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
+		private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
 		*/
 		private NodeView treeView1;
-		//private StatusStrip statusStrip1;
-		//private TextBox npcScriptTextBox;
-		private Label label1;
-		//private TextBox npcImageTextBox;
-		private Label label2;
 		/*
-		private TextBox npcDescTextBox;
-		private ToolStripMenuItem reloadToolStripMenuItem;
-		private ToolStripStatusLabel toolStripStatusLabel1;
-		private ToolStripMenuItem optionsStripMenuItem;
-		private ToolStripMenuItem optionsShowEmptyLevelsMenuItem;
-		private ToolStripMenuItem optionsShowCompleteMenuItem;
-		private ToolStripMenuItem optionsShowEmptyNpcsMenuItem;
+		private System.Windows.Forms.StatusStrip statusStrip1;
+		private System.Windows.Forms.TextBox npcScriptTextBox;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.TextBox npcImageTextBox;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.TextBox npcDescTextBox;
+		private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+		private System.Windows.Forms.ToolStripMenuItem optionsStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem optionsShowEmptyLevelsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem optionsShowCompleteMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem optionsShowEmptyNpcsMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripMenuItem optionsReplaceStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem optionReplaceMatchImagesMenuItem;
+		private System.Windows.Forms.TextBox searchBox;
 		*/
 	}
 }

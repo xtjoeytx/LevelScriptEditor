@@ -34,7 +34,7 @@ namespace LevelScriptEditor.Levels
 			return null;
 		}
 
-		private void clear()
+		private void Clear()
 		{
 			loaded = false;
 
@@ -42,11 +42,12 @@ namespace LevelScriptEditor.Levels
 			ChestList.Clear();
 			LinkList.Clear();
 			NpcList.Clear();
+			SignList.Clear();
 		}
 
 		public bool Reload()
 		{
-			clear();
+			Clear();
 
 			if (Path.GetExtension(filePath) != ".nw")
 				return false;
@@ -159,7 +160,7 @@ namespace LevelScriptEditor.Levels
 						code += lines[i] + "\n";
 					}
 
-					var npc = new LevelNPC(npcx, npcy, npcimg, code);
+					var npc = new LevelNPC(this, npcx, npcy, npcimg, code);
 					NpcList.Add(npc);
 				}
 			}
@@ -173,10 +174,10 @@ namespace LevelScriptEditor.Levels
 			if (!loaded)
 				return;
 
-			File.WriteAllText(filePath, getOutput());
+			File.WriteAllText(filePath, GetOutput());
 		}
 
-		public string getOutput()
+		public string GetOutput()
 		{
 			var sb = new StringBuilder();
 

@@ -10,14 +10,18 @@ namespace LevelScriptEditor.Levels
 		const char META_SEP = ':';
 		const char META_SUFFIX = ']';
 
+		private readonly GameLevel level;
+
 		public Dictionary<string, string> Headers = new Dictionary<string, string>();
+		public GameLevel Level { get => level; }
 		public string Image;
 		public string Code;
 		public double X;
 		public double Y;
 
-		public LevelNPC(double x, double y, string image, string script)
+		public LevelNPC(GameLevel level, double x, double y, string image, string script)
 		{
+			this.level = level;
 			this.Image = image;
 			this.X = x;
 			this.Y = y;
