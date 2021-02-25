@@ -19,6 +19,9 @@ namespace LevelScriptEditor.Forms
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			statusStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
+			toolStripStatusLabel2.Alignment = ToolStripItemAlignment.Right;
 		}
 
 		private void TreeView1_AfterSelect(System.Object sender, System.Windows.Forms.TreeViewEventArgs e)
@@ -346,19 +349,25 @@ namespace LevelScriptEditor.Forms
 			if (!state.showEmptyLevels)
 				nodes = nodes.Where(n => n.ChildrenNodes.Count > 0);
 
-			m_searchText = searchBox.Text.Replace("\r\n", "\n");
+			m_searchText = searchBox.Text.Replace("\r\n", "\n").Trim();
+
+			int totalMarked = 0, totalNodes = 0;
 
 			treeView1.Nodes.Clear();
 			treeView1.BeginUpdate();
 
 			foreach (var n in nodes)
 			{
+				totalMarked += n.ChildrenNodes.AsEnumerable().Where(n => n.NPC.Headers.ContainsKey("MARKED")).Count();
+				totalNodes += n.ChildrenNodes.Count;
+
 				RedrawLevelNode(n);
 				if (n.Nodes.Count > 0)
 					treeView1.Nodes.Add(n);
 			}
 
 			treeView1.EndUpdate();
+			toolStripStatusLabel2.Text = string.Format("NPCs: {0} / {1} completed", totalMarked, totalNodes);
 
 			// Try to preserve the current position in the treeview
 			if (activeNode != null && activeNode.Parent != null)

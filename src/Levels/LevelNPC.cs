@@ -17,6 +17,7 @@ namespace LevelScriptEditor.Levels
 		public string Code;
 		public double X;
 		public double Y;
+		private string _npcMadeBy = string.Empty;
 
 		public LevelNPC(GameLevel level, double x, double y, string image, string script)
 		{
@@ -44,6 +45,9 @@ namespace LevelScriptEditor.Levels
 					sb.Append(META_SUFFIX).Append('\n');
 				}
 			}
+
+			if (_npcMadeBy != string.Empty)
+				sb.Append(_npcMadeBy).Append('\n');
 
 			sb.Append(Code.Replace("\r\n", "\n"));
 			if (!Code.EndsWith("\n"))
@@ -85,13 +89,22 @@ namespace LevelScriptEditor.Levels
 					else
 					{
 						finishedHeader = true;
-						code = line;
+
+						if (line.StartsWith("// NPC made by "))
+							_npcMadeBy = line;
+						else
+							code = line;
 					}
 				}
-				else code += '\n' + line;
+				else
+				{
+					if (code != string.Empty)
+						code += '\n';
+					code += line;
+				}
 			}
 
-			this.Code = code;
+			this.Code = code.Trim();
 		}
 
 		public void ToggleHeader(string key)

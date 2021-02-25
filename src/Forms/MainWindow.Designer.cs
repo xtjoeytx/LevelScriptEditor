@@ -41,6 +41,7 @@
 			this.optionsShowEmptyLevelsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionsShowEmptyNpcsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionsShowCompleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.optionsInverseFilterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.optionsReplaceStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionReplaceMatchImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,7 +54,7 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.npcDescTextBox = new System.Windows.Forms.TextBox();
 			this.searchBox = new System.Windows.Forms.TextBox();
-			this.optionsInverseFilterMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
 			this.menuStrip1.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
 			this.SuspendLayout();
@@ -167,6 +168,14 @@
 			this.optionsShowCompleteMenuItem.Text = "Show Completed NPCS";
 			this.optionsShowCompleteMenuItem.CheckedChanged += new System.EventHandler(this.OptionsShowCompletedMenuItem_CheckedChanged);
 			// 
+			// optionsInverseFilterMenuItem
+			// 
+			this.optionsInverseFilterMenuItem.CheckOnClick = true;
+			this.optionsInverseFilterMenuItem.Name = "optionsInverseFilterMenuItem";
+			this.optionsInverseFilterMenuItem.Size = new System.Drawing.Size(263, 26);
+			this.optionsInverseFilterMenuItem.Text = "Inverse Search Filter";
+			this.optionsInverseFilterMenuItem.CheckedChanged += new System.EventHandler(this.optionsInverseFilterMenuItem_CheckedChanged);
+			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -205,17 +214,18 @@
 			// 
 			this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 779);
+            this.toolStripStatusLabel1,
+            this.toolStripStatusLabel2});
+			this.statusStrip1.Location = new System.Drawing.Point(0, 775);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(1089, 22);
+			this.statusStrip1.Size = new System.Drawing.Size(1089, 26);
 			this.statusStrip1.TabIndex = 3;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
 			// toolStripStatusLabel1
 			// 
 			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-			this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 16);
+			this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 20);
 			// 
 			// npcScriptTextBox
 			// 
@@ -285,13 +295,11 @@
 			this.searchBox.TabIndex = 10;
 			this.searchBox.TextChanged += new System.EventHandler(this.SearchBox_TextChanged);
 			// 
-			// optionsInverseFilterMenuItem
+			// toolStripStatusLabel2
 			// 
-			this.optionsInverseFilterMenuItem.CheckOnClick = true;
-			this.optionsInverseFilterMenuItem.Name = "optionsInverseFilterMenuItem";
-			this.optionsInverseFilterMenuItem.Size = new System.Drawing.Size(263, 26);
-			this.optionsInverseFilterMenuItem.Text = "Inverse Search Filter";
-			this.optionsInverseFilterMenuItem.CheckedChanged += new System.EventHandler(this.optionsInverseFilterMenuItem_CheckedChanged);
+			this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+			this.toolStripStatusLabel2.Size = new System.Drawing.Size(151, 20);
+			this.toolStripStatusLabel2.Text = "toolStripStatusLabel2";
 			// 
 			// MainWindow
 			// 
@@ -347,6 +355,7 @@
 		private System.Windows.Forms.ToolStripMenuItem optionReplaceMatchImagesMenuItem;
 		private System.Windows.Forms.TextBox searchBox;
 		private System.Windows.Forms.ToolStripMenuItem optionsInverseFilterMenuItem;
+		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
 	}
 }
 
