@@ -36,7 +36,7 @@ namespace LevelScriptEditor.Forms
 		{
 			identicalScripts.Clear();
 
-			foreach (var levelNode in state.nodeList)
+			foreach (var levelNode in state.NodeList)
 			{
 				var childNodes = levelNode.ChildrenNodes.AsEnumerable()
 											.Where(n => n.NPC.Code == originalCode)
