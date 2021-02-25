@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="GtkSharp" Version="3.22.25.128" />
+    <PackageReference Include="GtkSourceSharp" Version="3.22.25.128" />
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
   </ItemGroup>
 

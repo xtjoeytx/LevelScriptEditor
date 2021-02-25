@@ -31,7 +31,7 @@ namespace LevelScriptEditor.UI
 			}
 		}
 
-		private UINode(LevelNPC levelNPC, int npcId) : base()
+		private UINode(INodeObject levelNPC, int npcId) : base()
 		{
 			NodeObject = levelNPC;
 			_npcId = npcId;
@@ -40,7 +40,7 @@ namespace LevelScriptEditor.UI
 
 		public void UpdateDescription()
 		{
-			string newDesc = (((LevelNPC)NodeObject).Headers.ContainsKey("DESC") && ((LevelNPC)NodeObject).Headers["DESC"] != string.Empty) ? ((LevelNPC)NodeObject).Headers["DESC"] : $"NPC {_npcId}";
+			string newDesc = ((LevelNPC)NodeObject).Headers.ContainsKey("DESC") && ((LevelNPC)NodeObject).Headers["DESC"] != string.Empty ? ((LevelNPC)NodeObject).Headers["DESC"] : $"NPC {_npcId}";
 			if (newDesc != Text)
 				Text = newDesc;
 		}

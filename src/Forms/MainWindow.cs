@@ -7,10 +7,12 @@ using System.IO;
 using System.Linq;
 using Gdk;
 using Gtk;
+using GtkSource;
 using LevelScriptEditor.Levels;
 using Window = Gtk.Window;
 using WindowType = Gtk.WindowType;
 using static Gtk.Application;
+using Buffer = GtkSource.Buffer;
 
 namespace LevelScriptEditor.Forms
 {
@@ -31,54 +33,50 @@ namespace LevelScriptEditor.Forms
 		{
 			NodeSelection selection = (NodeSelection) o;
 			UINode node = (UINode)selection.SelectedNode;
+
+			if (node == null) return;
 			
-			Console.WriteLine($@"Select: {node?.NodeObject?.GetType()}");
-			if (node != null)
+			switch (node?.NodeObject?.GetType()?.ToString())
 			{
-				switch (node?.NodeObject?.GetType()?.ToString())
+				// Level node
+				case "LevelScriptEditor.Levels.GameLevel":
 				{
-					// Level node
-					case "LevelScriptEditor.UI.LevelNode":
-					{
 						
-						if (!node.Loaded)
-						{
-							//node.Load();
-							/*
+					if (!node.Loaded)
+					{
+						//node.Load();
+						/*
 							if (e.Action != TreeViewAction.ByKeyboard)
 								node.Expand();
 							*/
 							
-						}
-
-						break;
 					}
 
-					// NPC node
-					case "LevelScriptEditor.UI.LevelNPCNode":
-						SetActiveNode(node);
-						break;
+					break;
 				}
+
+				// NPC node
+				case "LevelScriptEditor.Levels.LevelNPC":
+					SetActiveNode(node);
+					break;
 			}
 		}
 
 		private void TreeView1_MouseDown(object sender, WidgetEventArgs e)
 		{
-			if ((e.Event is EventButton ev) && (ev.Type == EventType.ButtonPress) && (ev.Window == treeView1.BinWindow))
-			{
+			if (e.Event is not EventButton ev || ev.Type != EventType.ButtonPress || ev.Window != treeView1.BinWindow) return;
+			
+			if (ev.Button != 3)
+				return;
+
+			treeView1.GetPathAtPos((int) ev.X, (int) ev.Y, out TreePath path);
+
+			treeView1.NodeSelection.SelectPath(path);
+
+			if (treeView1.NodeSelection.SelectedNode == null) return;
 				
-				if (ev.Button != 3)
-					return;
-
-				treeView1.GetPathAtPos((int) ev.X, (int) ev.Y, out TreePath _path);
-
-				treeView1.NodeSelection.SelectPath(_path);
-
-				if (treeView1.NodeSelection.SelectedNode == null) return;
-				
-				UINode node = (UINode)treeView1.NodeSelection.SelectedNode;
-				ShowContextMenu(node, ev);
-			}
+			UINode node = (UINode)treeView1.NodeSelection.SelectedNode;
+			ShowContextMenu(node, ev);
 		}
 
 		private void ShowContextMenu(UINode node, EventButton e)
@@ -98,11 +96,11 @@ namespace LevelScriptEditor.Forms
 					MenuItem menu_item = new("Add file");
 					menu.AttachToWidget(treeView1, null);
 					LevelNPCMenu(menu, node);
-					//menu.Add(menu_item);
+					
 					menu.ShowAll();
-					//menu.Popup (null, null, null, e.Button, e.Time);
+					
 					menu.PopupAtPointer(e);
-					//menu.Realize();
+					
 					break;
 				}
 				default:
@@ -163,38 +161,38 @@ namespace LevelScriptEditor.Forms
 			// Save current node changes
 			if (activeNode != null)
 				UpdateActiveNode();
-			/*
-			 TODO:
+			
 			// Clear fields
-			npcDescTextBox.Clear();
-			npcImageTextBox.Clear();
-			npcScriptTextBox.Clear();
-			*/
+/*
+			npcDescTextBox.Text = string.Empty;
+			npcImageTextBox.Text = string.Empty;
+			npcScriptTextBox.Buffer.Clear();
+*/			
 			// Set new node
 			activeNode = node;
-			if (node != null)
-			{
-				/*
-				 TODO:
-				npcDescTextBox.Text = node.NPC.Headers.GetValueOrDefault("DESC", string.Empty);
-				npcImageTextBox.Text = node.NPC.Image;
-				npcScriptTextBox.Text = node.NPC.Code.Replace("\n", "\r\n");
-				*/
-			}
+			
+			if (node == null) return;
+			
+			_dontRunHandler = true;
+			
+			npcDescTextBox.Text = ((LevelNPC)node.NodeObject).Headers.GetValueOrDefault("DESC", string.Empty);
+			npcImageTextBox.Text = ((LevelNPC)node.NodeObject).Image;
+			npcScriptTextBox.Buffer.Text = ((LevelNPC)node.NodeObject).Code.Replace("\n", "\r\n");
+			
+			_dontRunHandler = false;
 		}
-
+		private static bool _dontRunHandler = true;
 		private void UpdateActiveNode()
 		{
 			if (activeNode != null)
 			{
-				/*
-				 TODO:
+				
 				state.UpdateNPC(activeNode,
-					npcScriptTextBox.Text.Replace("\r\n", "\n"),
+					npcScriptTextBox.Buffer.Text.Replace("\r\n", "\n"),
 					npcImageTextBox.Text.Trim(),
 					npcDescTextBox.Text.Trim(),
 					null);
-				*/
+				
 			}
 		}
 
@@ -205,33 +203,34 @@ namespace LevelScriptEditor.Forms
 
 		private void NpcDescTextBox_TextChanged(object sender, EventArgs e)
 		{
-			/*
-			var s = (TextBox)sender;
-			if (s.Modified)
+			if (_dontRunHandler) return;
+			Entry s = (Entry)sender;
+			//if (s.Modified)
 			{
 				UpdateActiveNode();
-				if (activeNode != null)
-					activeNode.UpdateDescription();
+				activeNode?.UpdateDescription();
 			}
-			*/
 		}
 
 		private void NpcScriptTextBox_TextChanged(object sender, EventArgs e)
 		{
-			/*
-			var s = (TextBox)sender;
-			if (s.Modified)
+			if (_dontRunHandler) return;
+			Buffer s = (Buffer)sender;
+			
+			//if (s.Modified)
+			{
 				UpdateActiveNode();
-				*/
+			}
 		}
 
 		private void NpcImageTextBox_TextChanged(object sender, EventArgs e)
 		{
-			/*
-			var s = (TextBox)sender;
-			if (s.Modified)
+			if (_dontRunHandler) return;
+			Entry s = (Entry)sender;
+			//if (s.Modified)
+			{
 				UpdateActiveNode();
-				*/
+			}
 		}
 		#endregion
 

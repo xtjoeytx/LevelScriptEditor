@@ -1,6 +1,8 @@
 ﻿using System;
 using Gdk;
 using Gtk;
+using GtkSource;
+using LevelScriptEditor.State;
 
 namespace LevelScriptEditor.Forms
 {
@@ -50,15 +52,19 @@ namespace LevelScriptEditor.Forms
 			this.optionsReplaceStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.optionReplaceMatchImagesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			*/
-			this.treeView1 = new NodeView();
+			this.treeView1 = new ();
+			
 			/*
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-			this.npcScriptTextBox = new System.Windows.Forms.TextBox();
-			this.label1 = new System.Windows.Forms.Label();
-			this.npcImageTextBox = new System.Windows.Forms.TextBox();
-			this.label2 = new System.Windows.Forms.Label();
-			this.npcDescTextBox = new System.Windows.Forms.TextBox();
+			*/
+			this.npcScriptTextBox = new ();
+			
+			this.label1 = new ();
+			this.npcImageTextBox = new ();
+			this.label2 = new ();
+			this.npcDescTextBox = new ();
+			/*
 			this.searchBox = new System.Windows.Forms.TextBox();
 			this.menuStrip1.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
@@ -201,7 +207,7 @@ namespace LevelScriptEditor.Forms
 			//this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 //            | System.Windows.Forms.AnchorStyles.Left)));			this.treeView1.Location = new System.Drawing.Point(12, 44);
 			this.treeView1.Name = "treeView1";
-			this.treeView1.SetSizeRequest(270, 632);
+			
 			//this.treeView1.TabIndex = 1;
 			//this.treeView1.AfterSelect += new TreeViewEventHandler(this.TreeView1_AfterSelect);
 			this.treeView1.NodeSelection.Changed += this.TreeView1_AfterSelect;
@@ -220,10 +226,9 @@ namespace LevelScriptEditor.Forms
 			this.treeView1.WidgetEvent += TreeView1_MouseDown;
 			this.treeView1.ShowExpanders = true;
 			
-						
 			// Create our TreeView and add it as our child widget
 			this.treeView1.NodeStore = Store;
-
+			/*
 			Dialog test = new Dialog("test", this, DialogFlags.Modal);
 			test.SetSizeRequest(800,600);
 			test.AddButton("_OK", ResponseType.Ok);
@@ -233,6 +238,7 @@ namespace LevelScriptEditor.Forms
 				
 			};
 			test.ShowAll();
+			*/
 			var column = this.treeView1.AppendColumn ("Levels", new Gtk.CellRendererText (), "text", 0);
 			column.SortIndicator = true;
 			column.SortOrder = SortType.Ascending;
@@ -242,41 +248,55 @@ namespace LevelScriptEditor.Forms
 			//treeView1.AppendColumn ("Song Title", new Gtk.CellRendererText (), "text", 1);
 			this.treeView1.ShowAll ();
 			
-			Table table = new Table(2, 1, false);
+			Table table = new Table(1, 1, false);
 			
-			Table ServersFrameTable = new Table(1, 2, false);
+			//Table ServersFrameTable = new Table(1, 2, true);
+			HPaned mainPane = new HPaned();
+			mainPane.Expand = true;
 			
-			ServersFrameTable.RowSpacing = 1;
-			Label spacer = new Label();
-			spacer.SetSizeRequest(10, 1);
-			ServersFrameTable.Attach(spacer, 0, 1, 0, 1, AttachOptions.Fill, AttachOptions.Fill, 5, 1);
 
-			ScrolledWindow ServerListScrolledWindow = new global::Gtk.ScrolledWindow();
-			ServerListScrolledWindow.Name = "GtkScrolledWindow";
-			ServerListScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
+			ScrolledWindow npcListScrolledWindow = new global::Gtk.ScrolledWindow();
+			npcListScrolledWindow.Name = "GtkScrolledWindow";
+			npcListScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
+			npcListScrolledWindow.Add(this.treeView1);
+			npcListScrolledWindow.SetSizeRequest(270, 632);
 
-			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-
-			ServerListScrolledWindow.Add(this.treeView1);
+			ScrolledWindow npcScriptTextBoxScrolledWindow = new global::Gtk.ScrolledWindow();
+			npcScriptTextBoxScrolledWindow.Name = "ServerInfoScrolledWindow";
+			npcScriptTextBoxScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
+			npcScriptTextBoxScrolledWindow.Add(this.npcScriptTextBox);
+			npcScriptTextBoxScrolledWindow.Expand = true;
 			
-			Frame ServerListFrame = new Frame();
-			//ServerListFrame.Add(ServerListScrolledWindow);
-
-			Frame ServerInfoFrame = new Frame();
-
-			ServersFrameTable.Attach(ServerInfoFrame, 1, 2, 0, 1, AttachOptions.Fill | AttachOptions.Expand, AttachOptions.Fill | AttachOptions.Expand, 5, 1);
-			ServersFrameTable.Attach(ServerListScrolledWindow, 0, 1, 0, 1, AttachOptions.Fill | AttachOptions.Expand, AttachOptions.Fill | AttachOptions.Expand, 5, 1);
-
-			HBox hbox = new HBox(true, 5);
+			Table npcContentBox = new Table(2,1, false);
+			//npcContentBox.Fill = true;
+			npcContentBox.Expand = true;
+			
+			
+			HBox hbox = new HBox(false, 5);
+			hbox.Add(label1);
+			hbox.Add(npcImageTextBox);
+			hbox.Add(label2);
+			hbox.Add(npcDescTextBox);
+			hbox.SetSizeRequest(10, 22 );
+			hbox.Expand = false;
+			hbox.Fill = true;
+			
+			npcContentBox.Attach(hbox, 0, 1 ,0, 1, AttachOptions.Fill | AttachOptions.Expand | AttachOptions.Shrink, AttachOptions.Fill | AttachOptions.Shrink, 5, 5);
+			npcContentBox.Attach(npcScriptTextBoxScrolledWindow, 0, 1 ,1, 2, AttachOptions.Fill | AttachOptions.Expand | AttachOptions.Shrink, AttachOptions.Fill | AttachOptions.Shrink, 5, 5);
+			
+			mainPane.Add(npcListScrolledWindow);
+			mainPane.Add(npcContentBox);
+			
+			//
 			table.BorderWidth = 0;
-			table.SetSizeRequest(100, 100);
+			//table.SetSizeRequest(100, 100);
 			/*
 			Frame ServersFrame = new Frame();
 			ServersFrame.LabelWidget = new Label() { Name = "Servers", Text = " Servers " };
 			ServersFrame.ShadowType = ShadowType.EtchedIn;
 			ServersFrame.Add(ServersFrameTable);
 			*/
-			table.Attach(ServersFrameTable, 0, 1, 0, 1, AttachOptions.Fill | AttachOptions.Expand, AttachOptions.Fill | AttachOptions.Expand, 5, 5);
+			table.Attach(mainPane, 0, 1, 0, 1, AttachOptions.Fill | AttachOptions.Expand, AttachOptions.Fill | AttachOptions.Expand, 5, 5);
 			this.Add(table);
 
 			/*
@@ -296,62 +316,78 @@ namespace LevelScriptEditor.Forms
 			// 
 			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
 			this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 16);
+			*/
 			// 
 			// npcScriptTextBox
 			// 
-			this.npcScriptTextBox.AcceptsReturn = true;
+			//this.npcScriptTextBox.AcceptsReturn = true;
 			this.npcScriptTextBox.AcceptsTab = true;
-			this.npcScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.npcScriptTextBox.Location = new System.Drawing.Point(288, 77);
-			this.npcScriptTextBox.Multiline = true;
+			this.npcScriptTextBox.ShowLineNumbers = true;
+			this.npcScriptTextBox.Monospace = true;
+			this.npcScriptTextBox.Buffer.Language = new LanguageManager().GetLanguage("js");
+			this.npcScriptTextBox.Buffer.HighlightSyntax = true;
+			this.npcScriptTextBox.Buffer.StyleScheme = new StyleSchemeManager().GetScheme("cobalt");
+			//Console.WriteLine(new LanguageManager().SearchPath);
+			//manager.SearchPath = state.BaseDir;
+			//var test = manager.GetLanguage("graal");
+			//paths.append('resources:///plugins/my-plugin/language-specs/')
+			//manager.set_search_path(paths)
+			//this.npcScriptTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            //| System.Windows.Forms.AnchorStyles.Left) 
+            //| System.Windows.Forms.AnchorStyles.Right)));
+			//this.npcScriptTextBox.Location = new System.Drawing.Point(288, 77);
+			//this.npcScriptTextBox.Multiline = true;
 			this.npcScriptTextBox.Name = "npcScriptTextBox";
-			this.npcScriptTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.npcScriptTextBox.Size = new System.Drawing.Size(788, 699);
-			this.npcScriptTextBox.TabIndex = 5;
-			this.npcScriptTextBox.TextChanged += new System.EventHandler(this.NpcScriptTextBox_TextChanged);
+			//this.npcScriptTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			//this.npcScriptTextBox.Size = new System.Drawing.Size(788, 699);
+			//this.npcScriptTextBox.TabIndex = 5;
+			this.npcScriptTextBox.Buffer.Changed += this.NpcScriptTextBox_TextChanged;
+			
 			// 
 			// label1
 			// 
-			this.label1.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Bottom) 
-            | AnchorStyles.Left)));
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(288, 47);
+			//this.label1.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Bottom) 
+            //| AnchorStyles.Left)));
+			//this.label1.Expand = true;
+			//this.label1.Location = new System.Drawing.Point(288, 47);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(51, 20);
-			this.label1.TabIndex = 6;
+			this.label1.SetSizeRequest(51, 20);
+			//this.label1.TabIndex = 6;
 			this.label1.Text = "Image";
 			// 
 			// npcImageTextBox
 			// 
-			this.npcImageTextBox.Location = new System.Drawing.Point(345, 44);
+			//this.npcImageTextBox.Location = new System.Drawing.Point(345, 44);
 			this.npcImageTextBox.Name = "npcImageTextBox";
-			this.npcImageTextBox.Size = new System.Drawing.Size(256, 27);
-			this.npcImageTextBox.TabIndex = 7;
-			this.npcImageTextBox.TextChanged += new System.EventHandler(this.NpcImageTextBox_TextChanged);
+			this.npcImageTextBox.SetSizeRequest(256, 27);
+			this.npcImageTextBox.Editable = true;
+			//this.npcImageTextBox.Buffer.
+			
+			//this.npcImageTextBox.TabIndex = 7;
+			this.npcImageTextBox.Changed += this.NpcImageTextBox_TextChanged;
 			// 
 			// label2
 			// 
-			this.label2.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Bottom) 
-            | AnchorStyles.Left)));
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(607, 47);
+			//this.label2.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Bottom) 
+            //| AnchorStyles.Left)));
+			//this.label2.Expand = true;
+			//this.label2.Location = new System.Drawing.Point(607, 47);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(85, 20);
-			this.label2.TabIndex = 8;
+			this.label2.SetSizeRequest(85, 20);
+			//this.label2.TabIndex = 8;
 			this.label2.Text = "Description";
 			// 
 			// npcDescTextBox
 			// 
-			this.npcDescTextBox.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left) 
-            | AnchorStyles.Right)));
-			this.npcDescTextBox.Location = new System.Drawing.Point(698, 44);
-			this.npcDescTextBox.MinimumSize = new System.Drawing.Size(128, 4);
+			//this.npcDescTextBox.Anchor = ((AnchorStyles)(((AnchorStyles.Top | AnchorStyles.Left) 
+            //| AnchorStyles.Right)));
+			//this.npcDescTextBox.Location = new System.Drawing.Point(698, 44);
+			//this.npcDescTextBox.MinimumSize = new System.Drawing.Size(128, 4);
 			this.npcDescTextBox.Name = "npcDescTextBox";
-			this.npcDescTextBox.Size = new System.Drawing.Size(378, 27);
-			this.npcDescTextBox.TabIndex = 9;
-			this.npcDescTextBox.TextChanged += new System.EventHandler(this.NpcDescTextBox_TextChanged);
+			this.npcDescTextBox.SetSizeRequest(378, 27);
+			//this.npcDescTextBox.TabIndex = 9;
+			this.npcDescTextBox.Changed += this.NpcDescTextBox_TextChanged;
+			/*
 			// 
 			// searchBox
 			// 
@@ -417,11 +453,14 @@ namespace LevelScriptEditor.Forms
 		private NodeView treeView1;
 		/*
 		private System.Windows.Forms.StatusStrip statusStrip1;
-		private System.Windows.Forms.TextBox npcScriptTextBox;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.TextBox npcImageTextBox;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox npcDescTextBox;
+		*/
+		private SourceView npcScriptTextBox;
+		
+		private Label label1;
+		private Entry npcImageTextBox;
+		private Label label2;
+		private Entry npcDescTextBox;
+		/*
 		private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
 		private System.Windows.Forms.ToolStripMenuItem optionsStripMenuItem;
