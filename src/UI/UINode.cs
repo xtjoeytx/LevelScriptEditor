@@ -5,6 +5,7 @@ using Gtk;
 
 namespace LevelScriptEditor.UI
 {
+	[TreeNode (ListOnly=false)]
 	public class UINode : TreeNode
 	{
 		public bool Loaded => NodeObject != null;

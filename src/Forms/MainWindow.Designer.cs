@@ -1,4 +1,5 @@
-﻿using Gdk;
+﻿using System;
+using Gdk;
 using Gtk;
 
 namespace LevelScriptEditor.Forms
@@ -206,6 +207,7 @@ namespace LevelScriptEditor.Forms
 			this.treeView1.NodeSelection.Changed += this.TreeView1_AfterSelect;
 			//this.treeView1.ButtonPressEvent += this.TreeView1_MouseDown;
 			this.treeView1.NodeSelection.Mode = SelectionMode.Single;
+			
 			//this.treeView1.Sensitive = true; //.ButtonPressEvent += TreeView1_MouseDown;
 			this.treeView1.FixedHeightMode = false;
 			this.treeView1.HeadersClickable = true;
@@ -213,6 +215,7 @@ namespace LevelScriptEditor.Forms
 			this.treeView1.SearchColumn = 0;
 			this.treeView1.EnableSearch = true;
 			this.treeView1.EnableTreeLines = true;
+			
 			//this.treeView1.PopupMenu += TreeView1OnPopupMenu;
 			this.treeView1.WidgetEvent += TreeView1_MouseDown;
 			this.treeView1.ShowExpanders = true;
@@ -220,13 +223,21 @@ namespace LevelScriptEditor.Forms
 						
 			// Create our TreeView and add it as our child widget
 			this.treeView1.NodeStore = Store;
-			//Add (this.treeView1);
-			
-			var column = this.treeView1.AppendColumn ("", new Gtk.CellRendererText (), "text", 0);
+
+			Dialog test = new Dialog("test", this, DialogFlags.Modal);
+			test.SetSizeRequest(800,600);
+			test.AddButton("_OK", ResponseType.Ok);
+			test.AddButton("_Cancel", ResponseType.Cancel);
+			test.DestroyEvent += delegate(object sender, DestroyEventArgs args)
+			{
+				
+			};
+			test.ShowAll();
+			var column = this.treeView1.AppendColumn ("Levels", new Gtk.CellRendererText (), "text", 0);
 			column.SortIndicator = true;
 			column.SortOrder = SortType.Ascending;
 			column.SortColumnId = 0;
-
+			
 			// Create a column with title 'Song Title' and bind its renderer to model column 1
 			//treeView1.AppendColumn ("Song Title", new Gtk.CellRendererText (), "text", 1);
 			this.treeView1.ShowAll ();
