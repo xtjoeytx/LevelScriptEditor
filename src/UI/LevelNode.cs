@@ -5,7 +5,7 @@ using Gtk;
 
 namespace LevelScriptEditor.UI
 {
-	public partial class LevelNode : TreeNode
+	public class LevelNode : TreeNode
 	{
 		private string filePath;
 
@@ -42,12 +42,6 @@ namespace LevelScriptEditor.UI
 				
 				/*ChildrenNodes.*/AddChild(new LevelNPCNode(npc, i + 1));
 			}
-		}
-
-		public void Save()
-		{
-			if (Loaded)
-				GameLevel.Save();
 		}
 	}
 }

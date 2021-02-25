@@ -5,6 +5,7 @@ using Gtk;
 
 namespace LevelScriptEditor.UI
 {
+	[TreeNode (ListOnly=false)]
 	public class UINode : TreeNode
 	{
 		public bool Loaded => NodeObject != null;
@@ -15,10 +16,10 @@ namespace LevelScriptEditor.UI
 		[TreeNodeValue (Column=0)]
 		public string Text { get; set; }
 
-		public UINode(string baseDir, string name)
+		public UINode(string baseDir, string filePath)
 		{
-			Text = name;
-			string filePath = Path.Combine(baseDir, name);
+			Text = filePath.Replace($"{baseDir}{Path.DirectorySeparatorChar}","");
+			//string filePath = Path.Combine(baseDir, name);
 			NodeObject = GameLevel.Load(filePath);
 			if (NodeObject == null) return;
 			

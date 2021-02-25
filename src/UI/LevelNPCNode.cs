@@ -25,7 +25,10 @@ namespace LevelScriptEditor.UI
 
 		public void UpdateDescription()
 		{
-			_text = NPC.Headers.ContainsKey("DESC") && NPC.Headers["DESC"] != string.Empty ? NPC.Headers["DESC"] : "NPC " + _npcId;
+			var newDesc = NPC.Headers.ContainsKey("DESC") && NPC.Headers["DESC"] != string.Empty ? NPC.Headers["DESC"] : "NPC " + _npcId;
+
+			if (newDesc != _text)
+				_text = newDesc;
 		}
 	}
 }
